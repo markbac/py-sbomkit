@@ -80,7 +80,16 @@ class SBOMGenerator:
             logger.error(f"Error parsing {pkg_path}: {e}")
         return components
 
-    def export_cyclonedx_json(self, components: List[Component]) -> Dict[str, Any]:
+    def export_cyclonedx_json(self, components: List[Component], components_file: Optional[Path] = None,
+                              product_version: Optional[str] = None) -> Dict[str, Any]:
+        """CycloneDX 1.4 document. A components file adds declared parts (firmware, toolchain ...) and a product."""
+        bom = self._cyclonedx(components)
+        if components_file is not None:
+            from .components_file import apply_to_bom, load_components_file
+            apply_to_bom(bom, load_components_file(components_file), product_version)
+        return bom
+
+    def _cyclonedx(self, components: List[Component]) -> Dict[str, Any]:
         return {
             "bomFormat": "CycloneDX",
             "specVersion": "1.4",
@@ -97,7 +106,7 @@ class SBOMGenerator:
             ]
         }
 
-    def export_markdown(self, components: List[Component]) -> str:
+    def export_markdown(self, components: List[Component], components_file: Optional[Path] = None) -> str:
         lines = [
             "# Software Bill of Materials (SBOM)",
             "",
@@ -107,4 +116,14 @@ class SBOMGenerator:
         for c in sorted(components, key=lambda x: x.name.lower()):
             lines.append(f"| `{c.name}` | `{c.version}` | {c.ecosystem} | {c.license_name} |")
         lines.append("")
+        if components_file is not None:
+            from .components_file import load_components_file
+            cf = load_components_file(components_file)
+            lines += ["## Declared components", "", f"From `{cf.path.name}`.", "",
+                      "| Component | Type | Version | Supplier | License | Open gaps |", "|---|---|---|---|---|---|"]
+            for c in cf.components:
+                lic = c.spdx or c.license or "unknown"
+                lines.append(f"| `{c.name}` | {c.type} | {c.version or 'unknown'} | {c.supplier or ''} | {lic} | "
+                             f"{', '.join(c.gaps())} |")
+            lines.append("")
         return "\n".join(lines)

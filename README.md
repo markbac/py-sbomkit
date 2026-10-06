@@ -28,6 +28,7 @@ py-sbomkit/
 ├── pysbomkit/
 │   ├── __init__.py         # Package exports
 │   ├── generator.py        # Core SBOMGenerator & Component model
+│   ├── components_file.py  # Hand-kept components.yaml reader
 │   ├── cli.py              # CLI Argument Parser & Exporter
 │   └── pylogkit/           # Py-LogKit logging framework
 ├── tests/
@@ -93,6 +94,37 @@ py-sbomkit docs/project -f markdown -o SBOM.md
 | `target` | | `.` | Target project root directory containing manifests |
 | `--format` | `-f` | `cyclonedx-json` | Output format (`cyclonedx-json`, `markdown`) |
 | `--output` | `-o` | `stdout` | Output file path (prints to terminal stdout if omitted) |
+| `--components` | `-c` | none | Hand-kept `components.yaml` to include (see below) |
+| `--product-version` | | none | Version for the product when the components file leaves it unknown |
+
+#### Components file
+
+A manifest scan cannot see a bootloader in protected flash, modem firmware delivered as a binary, a second
+processor, or the toolchain. List them in a YAML file and pass it with `--components`:
+
+```yaml
+metadata:
+  supplier: "Example Ltd"
+product:
+  name: "Example Meter"
+  type: device
+application_firmware:
+  third_party:
+    - { name: "Gecko SDK", version: "4.4.1", type: framework, license: "Zlib", spdx_expression: "Zlib" }
+modem_firmware:
+  - { name: "Modem firmware", version: "unknown", type: firmware, supplier: "Quectel", license: "Proprietary" }
+```
+
+Any top-level list of components is read, and a section may itself hold lists (`first_party`, `third_party`). A
+`product` section becomes the described component. An empty value or `unknown` is left out of the SBOM and listed
+in the `sbomkit:gaps` property of that component and in `sbomkit:components-file-gaps`, so missing versions,
+licences and CVE checks are visible rather than guessed. Supported keys per component: `name`, `version`, `type`,
+`supplier`, `supplier_url`, `supplier_contact`, `license`, `spdx_expression`, `license_notes`, `purl`, `cpe`,
+`location`, `description`, `notes`, `copyright`, `cve_checked` and `compliance_actions`.
+
+```bash
+py-sbomkit . --components components.yaml --product-version 2.0.1 -o sbom.json
+```
 
 ---
 
