@@ -40,11 +40,11 @@ def test_components_file_adds_declared_parts_and_a_product(tmp_path):
     assert product["name"] == "Acme Smart Meter" and product["type"] == "device"
     assert product["version"] == "2.0.1"
     by_name = {c["name"]: c for c in bom["components"]}
-    modem = by_name["Quectel BC660K-GL NB-IoT Modem Firmware"]
+    modem = by_name["Example Cellular Modem Firmware"]
     assert modem["type"] == "firmware" and "version" not in modem          # "unknown" is not guessed
     assert {"name": "sbomkit:gaps", "value": "version, CVE check"} in modem["properties"]
-    assert by_name["Silicon Labs Gecko SDK (EFM32GG12B)"]["licenses"] == [{"expression": "Zlib"}]
-    assert by_name["IAR Embedded Workbench for ARM (EWARM)"]["type"] == "application"
+    assert by_name["Vendor MCU SDK"]["licenses"] == [{"expression": "Zlib"}]
+    assert by_name["Example Toolchain"]["type"] == "application"
     deps = next(d for d in bom["dependencies"] if d["ref"] == "product")["dependsOn"]
     assert len(deps) == len(bom["components"]) == 11
 
@@ -58,7 +58,7 @@ def test_components_file_merges_with_scanned_components(tmp_path):
 
 def test_markdown_lists_declared_components():
     text = SBOMGenerator().export_markdown([], FIXTURE)
-    assert "## Declared components" in text and "`CycurLIB`" in text and "version, CVE check" in text
+    assert "## Declared components" in text and "`ExampleCrypto`" in text and "version, CVE check" in text
 
 
 def test_bad_components_file_is_an_error(tmp_path):
