@@ -4,9 +4,9 @@ import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-from .pylogkit import setup_logging
+import logging
 
-logger = setup_logging(name="SBOMKit", to_console=True, to_file=False)
+logger = logging.getLogger(__name__)
 
 class Component:
     def __init__(self, name: str, version: str, ecosystem: str, license_name: str = "UNKNOWN"):

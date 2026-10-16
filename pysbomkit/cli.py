@@ -2,6 +2,9 @@ import argparse
 import json
 import sys
 from pathlib import Path
+
+from ctxlogkit import setup_logging
+
 from .components_file import ComponentsFileError
 from .generator import SBOMGenerator
 
@@ -18,6 +21,9 @@ def main():
     parser.add_argument("--product-version", type=str, help="Version for the product when the components file leaves it unknown")
 
     args = parser.parse_args()
+
+    # Logs go to stderr so stdout stays clean for the SBOM itself.
+    setup_logging(name="pysbomkit", to_console=True, to_file=False, console_stream=sys.stderr)
 
     generator = SBOMGenerator()
     target_path = Path(args.target).resolve()

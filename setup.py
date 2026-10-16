@@ -7,7 +7,7 @@ setup(
     author="Mark Bacon",
     packages=find_packages(),
     install_requires=[
-        "colorlog>=6.7.0",
+        "ctxlogkit @ git+https://github.com/markbac/py-logkit",
         "PyYAML>=6.0"
     ],
     entry_points={
@@ -15,5 +15,5 @@ setup(
             "py-sbomkit=pysbomkit.cli:main",
         ],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.10",
 )

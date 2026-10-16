@@ -1,7 +1,7 @@
 # `py-sbomkit` — Universal Software Bill of Materials (SBOM) Generator Toolkit
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![SBOM](https://img.shields.io/badge/CycloneDX-1.4-blue.svg)
 
 `py-sbomkit` is a generic, Python-based CLI developer toolkit for scanning multi-ecosystem code repositories (`requirements.txt`, `package.json`, `pyproject.toml`) and generating standardized **CycloneDX 1.4 JSON** and **Markdown** Software Bill of Materials (SBOM) manifests.
@@ -15,7 +15,7 @@ Software supply chain security requires maintaining accurate Software Bill of Ma
 1. **Multi-Ecosystem Discovery**: Automatically parses Python (`requirements.txt`, `pyproject.toml`) and Node.js (`package.json`) dependency manifests.
 2. **CycloneDX Standard Export**: Generates compliant CycloneDX 1.4 JSON specifications (`pkg:pypi/`, `pkg:npm/`) for security auditing tools (e.g. Dependency-Track, Grype, Trivy).
 3. **Markdown Matrix Export**: Generates human-readable Markdown tables for technical documentation pages.
-4. **Py-LogKit Logging**: Color-coded terminal progress logging (`pylogkit`).
+4. **Logging**: Color-coded terminal logging via [`ctxlogkit`](https://github.com/markbac/py-logkit).
 
 ---
 
@@ -29,8 +29,7 @@ py-sbomkit/
 │   ├── __init__.py         # Package exports
 │   ├── generator.py        # Core SBOMGenerator & Component model
 │   ├── components_file.py  # Hand-kept components.yaml reader
-│   ├── cli.py              # CLI Argument Parser & Exporter
-│   └── pylogkit/           # Py-LogKit logging framework
+│   └── cli.py              # CLI Argument Parser & Exporter
 ├── tests/
 │   └── test_generator.py   # Unit test suite
 ├── setup.py                # Package metadata & entry points
